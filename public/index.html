@@ -16,7 +16,7 @@
 
     <!-- Image Type -->
     <label>Image Type</label>
-    <select id="imageType">
+    <select id="image_Type">
       <option value="">-- Select Type --</option>
       <option value="realistic">Realistic</option>
       <option value="3d">3D</option>
@@ -70,32 +70,31 @@
     </button>
     <script>
         function generate_image(){
-           const generateBtn = document.getElementById('generateBtn');
+            const model = document.getElementById('model').value;
+            const image_type = document.getElementById('image_Type').value; // ID matches here
+            const category = document.getElementById('category').value;
+            const mode = document.getElementById('mode').value;
+            const image_size = document.getElementById('size').value;
 
-generateBtn.addEventListener('click', function() {
-    const model = document.getElementById('model').value;
-    const image_type = document.getElementById('imageType').value;
-    const category = document.getElementById('category').value;
-    const mode = document.getElementById('mode').value;
-    const image_size = document.getElementById('size').value;
+            const data = {
+                 model: model,
+                 image_type: image_type,
+                 category: category,
+                 mode: mode,
+                 image_size: image_size
+    }
 
-    const data = {
-        model: model,
-        image_type: image_type,
-        category: category,
-        mode: mode,
-        image_size: image_size
-    };
+    console.log(data); // For debugging
 
-    console.log(data);
+    fetch('http://localhost:3000/generate-image',{
+        method: "POST",
+        headers:{
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data) // Stringify for JSON
+    })
+}
 
-   
-});
-fetch('http://localhost:3000/generate-image',{
-    method: "POST",
-    body: data
-} )
-        }
     </script>
     </body>
 </html>
