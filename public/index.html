@@ -70,24 +70,31 @@
     </button>
     <script>
         function generate_image(){
-            const generateBtn = document.getElementById('generateBtn');
+           const generateBtn = document.getElementById('generateBtn');
 
 generateBtn.addEventListener('click', function() {
     const model = document.getElementById('model').value;
-    const imageType = document.getElementById('imageType').value;
+    const image_type = document.getElementById('imageType').value;
     const category = document.getElementById('category').value;
     const mode = document.getElementById('mode').value;
-    const size = document.getElementById('size').value;
+    const image_size = document.getElementById('size').value;
 
-    console.log('Model:', model);
-    console.log('Image Type:', imageType);
-    console.log('Category:', category);
-    console.log('Mode:', mode);
-    console.log('Size:', size);
+    const data = {
+        model: model,
+        image_type: image_type,
+        category: category,
+        mode: mode,
+        image_size: image_size
+    };
 
-    // Your API call or image generation logic here
+    console.log(data);
+
+   
 });
-            
+fetch('http://localhost:3000/generate-image',{
+    method: "POST",
+    body: data
+} )
         }
     </script>
     </body>

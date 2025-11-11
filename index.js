@@ -6,4 +6,9 @@ function firstEndpoint(req, res) {
 }
 
 app.get('/', firstEndpoint);
+
+app.post('/generate-image', (req, res) => {
+
+   console.log(req.body);
+})
 app.listen(3000);
