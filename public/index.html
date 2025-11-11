@@ -1,0 +1,94 @@
+<html>
+    <head>
+        <title>AI Image Generator</title>
+    </head>
+    <body>
+         <!-- Model Selection -->
+    <label>Choose Model</label>
+    <select id="model">
+      <option value="">-- Select Model --</option>
+      <option value="sd2">Stable Diffusion 2</option>
+      <option value="sdxl">SDXL</option>
+      <option value="nanobanana">Nano Banana</option>
+      <option value="dalle3">DALL·E 3</option>
+      <option value="any">Auto (Best available)</option>
+    </select>
+
+    <!-- Image Type -->
+    <label>Image Type</label>
+    <select id="imageType">
+      <option value="">-- Select Type --</option>
+      <option value="realistic">Realistic</option>
+      <option value="3d">3D</option>
+      <option value="illustration">Illustration</option>
+      <option value="anime">Anime</option>
+      <option value="concept-art">Concept Art</option>
+      <option value="photography">Photography</option>
+      <option value="pixel">Pixel Art</option>
+    </select>
+
+    <!-- Category -->
+    <label>Category</label>
+    <select id="category">
+      <option value="">-- Select Category --</option>
+      <option value="clothing">Clothing</option>
+      <option value="landscape">Landscape</option>
+      <option value="interior">Interior</option>
+      <option value="portrait">Portrait</option>
+      <option value="product">Product</option>
+      <option value="animals">Animals</option>
+      <option value="vehicles">Vehicles</option>
+    </select>
+
+    <!-- Mode -->
+    <label>Mode</label>
+    <select id="mode">
+      <option value="">-- Select Mode --</option>
+      <option value="cinematic">Cinematic</option>
+      <option value="minimalist">Minimalist</option>
+      <option value="vibrant">Vibrant</option>
+      <option value="dark">Dark</option>
+      <option value="fantasy">Fantasy</option>
+      <option value="retro">Retro</option>
+      <option value="scifi">Sci-Fi</option>
+    </select>
+
+    <!-- Size -->
+    <label>Image Size</label>
+    <select id="size">
+      <option value="">-- Select Size --</option>
+      <option value="256x256">256 × 256</option>
+      <option value="512x512">512 × 512</option>
+      <option value="768x768">768 × 768</option>
+      <option value="1024x1024">1024 × 1024</option>
+      <option value="1024x768">1024 × 768</option>
+      <option value="1920x1080">1920 × 1080</option>
+      <option value="4k">4K</option>
+    </select>
+    <button onclick=generate_image() id = "generate_button">
+        Generate Image
+    </button>
+    <script>
+        function generate_image(){
+            const generateBtn = document.getElementById('generateBtn');
+
+generateBtn.addEventListener('click', function() {
+    const model = document.getElementById('model').value;
+    const imageType = document.getElementById('imageType').value;
+    const category = document.getElementById('category').value;
+    const mode = document.getElementById('mode').value;
+    const size = document.getElementById('size').value;
+
+    console.log('Model:', model);
+    console.log('Image Type:', imageType);
+    console.log('Category:', category);
+    console.log('Mode:', mode);
+    console.log('Size:', size);
+
+    // Your API call or image generation logic here
+});
+            
+        }
+    </script>
+    </body>
+</html>
