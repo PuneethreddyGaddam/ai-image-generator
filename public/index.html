@@ -82,14 +82,12 @@
                  category: category,
                  mode: mode,
                  image_size: image_size
-    }
+            }
 
-    console.log(data); // For debugging
-
-    fetch('http://localhost:3000/generate-image',{
-        method: "POST",
-        headers:{
-            'Content-Type': 'application/json'
+             fetch('http://localhost:4000/generate-image',{
+              method: "POST",
+              headers:{
+              'Content-Type': 'application/json'
         },
         body: JSON.stringify(data) // Stringify for JSON
     })

@@ -16,5 +16,6 @@ app.get('/', firstEndpoint);
 app.post('/generate-image', (req, res) => {
 
    console.log(req.body);
+   res.send('connected to BE');
 })
-app.listen(3000);
+app.listen(4000);
