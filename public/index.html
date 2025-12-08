@@ -69,7 +69,7 @@
         Generate Image
     </button>
     <script>
-        function generate_image(){
+        async function generate_image(){
             const model = document.getElementById('model').value;
             const image_type = document.getElementById('image_Type').value; // ID matches here
             const category = document.getElementById('category').value;
@@ -84,13 +84,15 @@
                  image_size: image_size
             }
 
-             fetch('http://localhost:4000/generate-image',{
+             const response = await fetch('http://localhost:4000/generate-image',{
               method: "POST",
               headers:{
               'Content-Type': 'application/json'
         },
         body: JSON.stringify(data) // Stringify for JSON
-    })
+    });
+    const finalRes = await response.json();
+    console.log(finalRes)
 }
 
     </script>
