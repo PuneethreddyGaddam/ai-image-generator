@@ -1,12 +1,36 @@
 import express from 'express';
-import corse from 'cors';
+import cors from 'cors';
 import OpenAI from 'openai';
 import env from 'dotenv';
 
 env.config();
+
 const app = express();
 app.use(express.json());
-app.use(corse()); //app.confi, this is used to call middlewares
+app.use(cors()); 
+
+
+
+async function generateImage(promptText) {
+   const openai = new OpenAI({
+      apiKey: process.env.OPENAI_KEY, 
+   });
+
+   try {
+      const response = await openai.images.generate({
+         model: "gpt-image-1",          
+         prompt: promptText,
+         size: "1024x1024",
+         n: 1
+      });
+
+      return response.data[0].url;
+
+   } catch (error) {
+      console.error("Error generating image:", error);
+      throw error;
+   }
+}
 
 
 
@@ -16,40 +40,26 @@ function firstEndpoint(req, res) {
 
 app.get('/', firstEndpoint);
 
-app.post('/generate-image', (req, res) => {
 
-   const promptTxt = "Generate an image of an gray tabby cat hugging an otter with an orange scarf"
-   const imageObj = awaitgenerateImage(promptTxt);
-   console.log(imageObj);
+app.post('/generate-image', async (req, res) => {
+   const promptTxt = "Generate an gray tabby cat hugging an otter with an orange scarf";
 
-   
-   res.send('connected to BE');
-})
+   try {
+      const imageURL = await generateImage(promptTxt);   
+      console.log(imageURL);
 
-   async function generateImage(promptText){
+      res.json({
+         success: true,
+         image: imageURL
+      });
 
-      const openai = new OpenAI({
-         apiKey: process.env.OPEN-AI-KEY,
-    });
-
-      try{
-          const response = await openai.images.generate({
-            model: "dall-e-3",
-            prompt: promptText,
-            n: 1,
-            size: "1024x1024",
-         });
-         return response.data[0].url;
-      }catch (error){
-         console.error("Error generating image:", error);
-         throw error;
-      }
+   } catch (err) {
+      res.status(500).json({ success: false, error: "Failed to generate image" });
    }
+});
 
-app.post('/generate-image', (req, res) => {
-   const openai = new OpenAI({
-      apiKey: process.env.OPEN-AI-KEY,
-   });
-   res.send('connected to BE');
-})
-app.listen(process.env.PORT);
+
+
+app.listen(process.env.PORT, () => {
+   console.log(`Backend running on port ${process.env.PORT}`);
+});
