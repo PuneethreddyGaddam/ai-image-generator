@@ -44,13 +44,20 @@ app.get('/', firstEndpoint);
 app.post('/generate-image', async (req, res) => {
    const { customPrompt, image_size } = req.body;
    
-   // Use custom prompt if provided
-   const promptTxt = customPrompt || "Generate a realistic portrait image";
+   // Validate that customPrompt is provided and not empty
+   if (!customPrompt || customPrompt.trim() === "") {
+      return res.status(400).json({ 
+         success: false, 
+         error: "customPrompt is required. Please provide a description of the image you want to generate." 
+      });
+   }
    
-   // DALL-E 3 only supports these sizes
+   const promptTxt = customPrompt.trim();
+   
+   // DALL-E 3 only supports these sizes (optional with default)
    const validSizes = ["1024x1024", "1024x768", "768x1024"];
    let finalSize = "1024x1024"; // default
-   if (validSizes.includes(image_size)) {
+   if (image_size && validSizes.includes(image_size)) {
       finalSize = image_size;
    }
    
