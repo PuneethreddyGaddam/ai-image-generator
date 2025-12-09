@@ -84,12 +84,12 @@
                  image_size: image_size
             }
 
-             const response = await fetch('http://localhost:4000/generate-image',{
+             const response = await fetch('http://localhost:5000/generate-image', {
               method: "POST",
-              headers:{
+              headers: {
               'Content-Type': 'application/json'
         },
-        body: JSON.stringify(data) // Stringify for JSON
+        body: JSON.stringify(data)
     });
     const finalRes = await response.json();
     console.log(finalRes)

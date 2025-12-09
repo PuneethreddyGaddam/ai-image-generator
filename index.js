@@ -11,16 +11,16 @@ app.use(cors());
 
 
 
-async function generateImage(promptText) {
+async function generateImage(promptText, size = "1024x1024") {
    const openai = new OpenAI({
       apiKey: process.env.OPENAI_KEY, 
    });
 
    try {
       const response = await openai.images.generate({
-         model: "gpt-image-1",          
+         model: "dall-e-3",          
          prompt: promptText,
-         size: "1024x1024",
+         size: size,
          n: 1
       });
 
@@ -42,11 +42,26 @@ app.get('/', firstEndpoint);
 
 
 app.post('/generate-image', async (req, res) => {
-   const promptTxt = "Generate an gray tabby cat hugging an otter with an orange scarf";
+   const { model, image_type, category, mode, image_size } = req.body;
+   
+   // Build prompt from user selections
+   let promptTxt = `Generate a ${image_type || 'realistic'} ${category || 'portrait'} image`;
+   if (mode) promptTxt += ` in ${mode} style`;
+   
+   // DALL-E 3 only supports these sizes
+   const validSizes = ["1024x1024", "1024x768", "768x1024"];
+   let finalSize = "1024x1024"; // default
+   if (validSizes.includes(image_size)) {
+      finalSize = image_size;
+   }
+   
+   console.log("Prompt:", promptTxt);
+   console.log("Model:", model);
+   console.log("Size:", finalSize);
 
    try {
-      const imageURL = await generateImage(promptTxt);   
-      console.log(imageURL);
+      const imageURL = await generateImage(promptTxt, finalSize);   
+      console.log("Generated image URL:", imageURL);
 
       res.json({
          success: true,
@@ -54,12 +69,15 @@ app.post('/generate-image', async (req, res) => {
       });
 
    } catch (err) {
-      res.status(500).json({ success: false, error: "Failed to generate image" });
+      console.error("Error:", err.message);
+      res.status(500).json({ success: false, error: err.message || "Failed to generate image" });
    }
 });
 
 
 
-app.listen(process.env.PORT, () => {
-   console.log(`Backend running on port ${process.env.PORT}`);
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+   console.log(`Backend running on port ${PORT}`);
 });
