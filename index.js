@@ -42,11 +42,10 @@ app.get('/', firstEndpoint);
 
 
 app.post('/generate-image', async (req, res) => {
-   const { model, image_type, category, mode, image_size } = req.body;
+   const { customPrompt, image_size } = req.body;
    
-   // Build prompt from user selections
-   let promptTxt = `Generate a ${image_type || 'realistic'} ${category || 'portrait'} image`;
-   if (mode) promptTxt += ` in ${mode} style`;
+   // Use custom prompt if provided
+   const promptTxt = customPrompt || "Generate a realistic portrait image";
    
    // DALL-E 3 only supports these sizes
    const validSizes = ["1024x1024", "1024x768", "768x1024"];
@@ -56,7 +55,6 @@ app.post('/generate-image', async (req, res) => {
    }
    
    console.log("Prompt:", promptTxt);
-   console.log("Model:", model);
    console.log("Size:", finalSize);
 
    try {

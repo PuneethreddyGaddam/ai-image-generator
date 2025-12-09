@@ -65,23 +65,34 @@
       <option value="1920x1080">1920 × 1080</option>
       <option value="4k">4K</option>
     </select>
+
+    <!-- Custom Prompt -->
+    <label>Custom Prompt (Optional)</label>
+    <textarea id="prompt" placeholder="Enter your custom prompt here..." rows="4" style="width: 100%; padding: 8px; font-family: Arial;"></textarea>
+
     <button onclick=generate_image() id = "generate_button">
         Generate Image
     </button>
     <script>
         async function generate_image(){
             const model = document.getElementById('model').value;
-            const image_type = document.getElementById('image_Type').value; // ID matches here
+            const image_type = document.getElementById('image_Type').value;
             const category = document.getElementById('category').value;
             const mode = document.getElementById('mode').value;
             const image_size = document.getElementById('size').value;
+            const customPrompt = document.getElementById('prompt').value;
+
+            // Use custom prompt if provided, otherwise build from selections
+            let finalPrompt = customPrompt || `Generate a ${image_type || 'realistic'} ${category || 'portrait'} image`;
+            if (!customPrompt && mode) finalPrompt += ` in ${mode} style`;
 
             const data = {
                  model: model,
                  image_type: image_type,
                  category: category,
                  mode: mode,
-                 image_size: image_size
+                 image_size: image_size,
+                 customPrompt: finalPrompt
             }
 
              const response = await fetch('http://localhost:5000/generate-image', {
@@ -92,7 +103,17 @@
         body: JSON.stringify(data)
     });
     const finalRes = await response.json();
-    console.log(finalRes)
+    console.log(finalRes);
+    
+    // Display the generated image
+    if (finalRes.success) {
+        const imageDiv = document.getElementById('generated-image') || document.createElement('div');
+        imageDiv.id = 'generated-image';
+        imageDiv.innerHTML = `<img src="${finalRes.image}" style="max-width: 100%; margin-top: 20px; border-radius: 8px;">`;
+        if (!document.getElementById('generated-image')) {
+            document.body.appendChild(imageDiv);
+        }
+    }
 }
 
     </script>
