@@ -2,7 +2,6 @@
     <head>
         <title>AI Image Generator</title>
         <style>
-            @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
             * {
                 margin: 0;
                 padding: 0;
@@ -10,8 +9,8 @@
             }
 
             body {
-                background: linear-gradient(180deg, #2b1b66 0%, #1f1548 100%);
-                color: #f6efd9;
+                background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+                color: #ffffff;
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
                 min-height: 100vh;
                 padding: 40px 20px;
@@ -28,21 +27,17 @@
             }
 
             .header h1 {
-                font-family: 'Press Start 2P', monospace;
-                font-size: 44px;
-                margin-bottom: 6px;
-                color: #ffd66b;
-                letter-spacing: 2px;
-                text-shadow: 4px 4px 0 #1a0f36, 8px 8px 18px rgba(0,0,0,0.6);
+                font-size: 48px;
+                margin-bottom: 10px;
+                background: linear-gradient(135deg, #ffffff 0%, #b0b0b0 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
             }
 
             .header p {
-                font-family: 'Press Start 2P', monospace;
-                color: #ffd66b;
-                font-size: 12px;
-                margin-top: 6px;
-                opacity: 0.95;
-                letter-spacing: 1px;
+                color: #888888;
+                font-size: 16px;
             }
 
             .form-grid {
@@ -58,13 +53,12 @@
             }
 
             label {
-                font-size: 12px;
+                font-size: 14px;
                 font-weight: 600;
                 margin-bottom: 10px;
-                color: #ffd66b;
+                color: #e0e0e0;
                 text-transform: uppercase;
-                letter-spacing: 1px;
-                font-family: 'Press Start 2P', monospace;
+                letter-spacing: 0.5px;
             }
 
             label span {
@@ -75,8 +69,8 @@
             select {
                 padding: 12px 16px;
                 border: 1px solid rgba(255, 255, 255, 0.2);
-                background: rgba(255, 255, 255, 0.04);
-                color: #ffd;
+                background: rgba(255, 255, 255, 0.1);
+                color: #ffffff;
                 border-radius: 12px;
                 font-size: 14px;
                 cursor: pointer;
@@ -109,41 +103,16 @@
                 margin-bottom: 30px;
             }
 
-            .prompt-wrapper {
-                position: relative;
-                border-radius: 12px;
-                overflow: hidden;
-                padding: 18px;
-                background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));
-                box-shadow: 0 8px 32px rgba(0,0,0,0.6);
-            }
-
-            #prompt-canvas {
-                position: absolute;
-                inset: 0;
-                width: 100%;
-                height: 100%;
-                display: block;
-                z-index: 0;
-                pointer-events: none;
-                mix-blend-mode: screen;
-            }
-
             textarea {
-                position: relative;
-                z-index: 1;
                 padding: 16px;
-                border: 2px solid #3a2a7a;
-                background-color: rgba(12,8,28,0.6);
-                color: #f6efd9;
+                border: 1px solid #333333;
+                background-color: #1f1f1f;
+                color: #ffffff;
                 border-radius: 8px;
-                font-size: 13px;
-                font-family: 'Courier New', Courier, monospace;
+                font-size: 14px;
+                font-family: inherit;
                 resize: vertical;
                 transition: all 0.3s ease;
-                backdrop-filter: blur(6px);
-                -webkit-backdrop-filter: blur(6px);
-                box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
             }
 
             textarea:hover {
@@ -167,60 +136,36 @@
             }
 
             button {
-                position: relative;
-                padding: 12px 34px;
-                font-size: 13px;
-                font-weight: 700;
+                padding: 16px 48px;
+                font-size: 16px;
+                font-weight: 600;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                background: rgba(255, 255, 255, 0.1);
+                color: #ffffff;
                 border-radius: 12px;
-                color: #fff;
-                background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
-                border: 1px solid rgba(255,255,255,0.12);
                 cursor: pointer;
-                transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
+                transition: all 0.3s ease;
                 text-transform: uppercase;
-                letter-spacing: 1.5px;
-                backdrop-filter: blur(8px) saturate(140%);
-                -webkit-backdrop-filter: blur(8px) saturate(140%);
-                box-shadow: 0 8px 30px rgba(6,6,12,0.6), inset 0 1px 0 rgba(255,255,255,0.04);
-                overflow: hidden;
-            }
-
-            /* Glossy sheen */
-            button::after {
-                content: '';
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: 100%;
-                border-radius: inherit;
-                pointer-events: none;
-                background: linear-gradient(90deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.03) 45%, rgba(0,0,0,0.06) 100%);
-                mix-blend-mode: overlay;
-                transform: translateX(-110%);
-                transition: transform 0.6s cubic-bezier(.2,.9,.2,1);
-            }
-
-            button:hover::after {
-                transform: translateX(110%);
+                letter-spacing: 1px;
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+                box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
             }
 
             button:hover {
-                transform: translateY(-4px);
-                box-shadow: 0 18px 50px rgba(6,6,12,0.6);
-                border-color: rgba(255,255,255,0.18);
+                background: rgba(255, 255, 255, 0.15);
+                border-color: rgba(255, 255, 255, 0.3);
+                transform: translateY(-2px);
+                box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.3);
             }
 
             button:active {
                 transform: translateY(0);
-                box-shadow: 0 10px 30px rgba(6,6,12,0.5);
             }
 
             button:disabled {
-                opacity: 0.55;
+                opacity: 0.5;
                 cursor: not-allowed;
-                transform: none;
-                box-shadow: 0 6px 20px rgba(6,6,12,0.45);
             }
 
             .image-container {
@@ -333,12 +278,9 @@
 
             <!-- Custom Prompt -->
             <div class="prompt-section">
-                <div class="prompt-wrapper">
-                    <canvas id="prompt-canvas" aria-hidden="true"></canvas>
-                    <div class="form-group">
-                        <label>Custom Prompt <span>*</span></label>
-                        <textarea id="prompt" placeholder="Enter your custom prompt here..." rows="4"></textarea>
-                    </div>
+                <div class="form-group">
+                    <label>Custom Prompt <span>*</span></label>
+                    <textarea id="prompt" placeholder="Enter your custom prompt here..." rows="4"></textarea>
                 </div>
             </div>
 
@@ -354,97 +296,6 @@
         </div>
 
         <script>
-            // Canvas animated background for prompt area
-            (function(){
-                const canvas = document.getElementById('prompt-canvas');
-                if (!canvas) return;
-                const ctx = canvas.getContext('2d');
-
-                let width = 0, height = 0, blobs = [];
-
-                function resize(){
-                    const rect = canvas.getBoundingClientRect();
-                    width = Math.round(rect.width);
-                    height = Math.round(rect.height);
-                    canvas.width = width * devicePixelRatio;
-                    canvas.height = height * devicePixelRatio;
-                    ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
-                }
-
-                function rand(min, max){ return Math.random() * (max - min) + min; }
-
-                class Blob {
-                    constructor(){
-                        this.reset();
-                    }
-                    reset(){
-                        this.x = rand(0, width);
-                        this.y = rand(0, height);
-                        this.vx = rand(-0.5, 0.5);
-                        this.vy = rand(-0.5, 0.5);
-                        this.r = rand(Math.min(width, height)*0.12, Math.min(width, height)*0.35);
-                        this.h = rand(200, 360);
-                        this.a = rand(0.14, 0.4);
-                    }
-                    step(){
-                        this.x += this.vx;
-                        this.y += this.vy;
-                        if (this.x < -this.r) this.x = width + this.r;
-                        if (this.x > width + this.r) this.x = -this.r;
-                        if (this.y < -this.r) this.y = height + this.r;
-                        if (this.y > height + this.r) this.y = -this.r;
-                    }
-                    draw(ctx){
-                        const g = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.r);
-                        g.addColorStop(0, `hsla(${this.h},95%,60%,${this.a})`);
-                        g.addColorStop(0.35, `hsla(${this.h+25},92%,52%,${Math.max(0.02, this.a*0.95)})`);
-                        g.addColorStop(1, `hsla(${this.h+60},88%,38%,0)`);
-                        ctx.globalCompositeOperation = 'lighter';
-                        ctx.fillStyle = g;
-                        ctx.beginPath();
-                        ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
-                        ctx.fill();
-                        ctx.globalCompositeOperation = 'source-over';
-                    }
-                }
-
-                function init(){
-                    resize();
-                    blobs = [];
-                    const count = Math.max(4, Math.round(Math.min(width, height)/90));
-                    for (let i=0;i<count;i++) blobs.push(new Blob());
-                }
-
-                let mouseX = -9999, mouseY = -9999;
-                window.addEventListener('mousemove', (e)=>{
-                    const rect = canvas.getBoundingClientRect();
-                    mouseX = e.clientX - rect.left;
-                    mouseY = e.clientY - rect.top;
-                });
-
-                window.addEventListener('resize', ()=>{ init(); });
-
-                function animate(){
-                    ctx.clearRect(0,0,width,height);
-                    for (let b of blobs){
-                        // subtle attraction to mouse
-                        const dx = mouseX - b.x;
-                        const dy = mouseY - b.y;
-                        const dist = Math.hypot(dx,dy) || 1;
-                        const force = Math.min(0.12, 220/dist);
-                        b.vx += dx * 0.0012 * force;
-                        b.vy += dy * 0.0012 * force;
-                        b.vx *= 0.9995; b.vy *= 0.9995;
-                        b.step();
-                        b.draw(ctx);
-                    }
-                    requestAnimationFrame(animate);
-                }
-
-                init();
-                requestAnimationFrame(animate);
-            })();
-
             async function generate_image(){
                 const model = document.getElementById('model').value;
                 const image_type = document.getElementById('image_Type').value;
