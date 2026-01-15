@@ -2,6 +2,8 @@
     <head>
         <title>AI Image Generator</title>
         <style>
+            @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
             * {
                 margin: 0;
                 padding: 0;
@@ -9,9 +11,9 @@
             }
 
             body {
-                background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
-                color: #ffffff;
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                background: linear-gradient(180deg, #2b1b66 0%, #1f1548 100%);
+                color: #f6efd9;
+                font-family: 'Press Start 2P', monospace;
                 min-height: 100vh;
                 padding: 40px 20px;
             }
@@ -23,21 +25,25 @@
 
             .header {
                 text-align: center;
-                margin-bottom: 50px;
+                margin-bottom: 40px;
             }
 
             .header h1 {
-                font-size: 48px;
-                margin-bottom: 10px;
-                background: linear-gradient(135deg, #ffffff 0%, #b0b0b0 100%);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                background-clip: text;
+                font-family: 'Press Start 2P', monospace;
+                font-size: 44px;
+                margin-bottom: 6px;
+                color: #ffd66b;
+                letter-spacing: 2px;
+                text-shadow: 4px 4px 0 #1a0f36, 8px 8px 18px rgba(0,0,0,0.6);
             }
 
             .header p {
-                color: #888888;
-                font-size: 16px;
+                font-family: 'Press Start 2P', monospace;
+                color: #ffd66b;
+                font-size: 12px;
+                margin-top: 6px;
+                opacity: 0.95;
+                letter-spacing: 1px;
             }
 
             .form-grid {
@@ -53,12 +59,13 @@
             }
 
             label {
-                font-size: 14px;
+                font-size: 12px;
                 font-weight: 600;
                 margin-bottom: 10px;
-                color: #e0e0e0;
+                color: #ffd66b;
                 text-transform: uppercase;
-                letter-spacing: 0.5px;
+                letter-spacing: 1px;
+                font-family: 'Press Start 2P', monospace;
             }
 
             label span {
@@ -68,66 +75,90 @@
 
             select {
                 padding: 12px 16px;
-                border: 1px solid rgba(255, 255, 255, 0.2);
-                background: rgba(255, 255, 255, 0.1);
-                color: #ffffff;
+                border: 1px solid rgba(255, 255, 255, 0.06);
+                background: rgba(255, 255, 255, 0.04);
+                color: #ffd;
                 border-radius: 12px;
                 font-size: 14px;
                 cursor: pointer;
                 transition: all 0.3s ease;
                 font-family: inherit;
-                backdrop-filter: blur(10px);
-                -webkit-backdrop-filter: blur(10px);
-                box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+                backdrop-filter: blur(6px);
+                -webkit-backdrop-filter: blur(6px);
+                box-shadow: 0 8px 32px 0 rgba(0,0,0,0.6);
             }
 
             select:hover {
-                border-color: rgba(255, 255, 255, 0.3);
-                background: rgba(255, 255, 255, 0.15);
-                box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.3);
+                border-color: rgba(255, 255, 255, 0.12);
+                background: rgba(255, 255, 255, 0.06);
+                box-shadow: 0 12px 40px 0 rgba(0,0,0,0.6);
             }
 
             select:focus {
                 outline: none;
-                border-color: rgba(255, 255, 255, 0.4);
-                background: rgba(255, 255, 255, 0.2);
-                box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.3);
+                border-color: rgba(255, 255, 255, 0.2);
+                background: rgba(255, 255, 255, 0.06);
             }
 
             select option {
-                background-color: #1f1f1f;
-                color: #ffffff;
+                background-color: #2b2140;
+                color: #ffd66b;
             }
 
             .prompt-section {
                 margin-bottom: 30px;
             }
 
+            .prompt-wrapper {
+                position: relative;
+                border-radius: 12px;
+                overflow: hidden;
+                padding: 18px;
+                background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));
+                box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+            }
+
+            #prompt-canvas {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                display: block;
+                z-index: 0;
+                pointer-events: none;
+                mix-blend-mode: screen;
+            }
+
             textarea {
+                position: relative;
+                z-index: 1;
                 padding: 16px;
-                border: 1px solid #333333;
-                background-color: #1f1f1f;
-                color: #ffffff;
+                border: 2px solid #3a2a7a;
+                background-color: rgba(12,8,28,0.6);
+                color: #f6efd9;
                 border-radius: 8px;
-                font-size: 14px;
-                font-family: inherit;
+                font-size: 13px;
+                font-family: 'Courier New', Courier, monospace;
                 resize: vertical;
                 transition: all 0.3s ease;
+                backdrop-filter: blur(6px);
+                -webkit-backdrop-filter: blur(6px);
+                box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
             }
 
             textarea:hover {
-                border-color: #555555;
-                background-color: #252525;
+                border-color: #5a4aa8;
+                background-color: rgba(18,12,42,0.7);
             }
 
             textarea:focus {
                 outline: none;
-                border-color: #888888;
-                background-color: #252525;
+                border-color: #ffd66b;
+                background-color: rgba(18,12,42,0.75);
             }
 
             textarea::placeholder {
-                color: #666666;
+                color: #bba86f;
             }
 
             .button-container {
@@ -136,62 +167,39 @@
             }
 
             button {
-                padding: 16px 48px;
-                font-size: 16px;
-                font-weight: 600;
-                border: 1px solid rgba(255, 255, 255, 0.2);
-                background: rgba(255, 255, 255, 0.1);
-                color: #ffffff;
-                border-radius: 12px;
+                padding: 12px 34px;
+                font-size: 12px;
+                font-weight: 700;
+                border: 2px solid #ffd66b;
+                background: linear-gradient(180deg,#ffd66b22,#ffd66b11);
+                color: #1a0f36;
+                border-radius: 8px;
                 cursor: pointer;
                 transition: all 0.3s ease;
                 text-transform: uppercase;
-                letter-spacing: 1px;
-                backdrop-filter: blur(10px);
-                -webkit-backdrop-filter: blur(10px);
-                box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+                letter-spacing: 2px;
+                backdrop-filter: blur(6px);
+                -webkit-backdrop-filter: blur(6px);
+                box-shadow: 0 8px 32px 0 rgba(0,0,0,0.6);
+                font-family: 'Press Start 2P', monospace;
             }
 
             button:hover {
-                background: rgba(255, 255, 255, 0.15);
-                border-color: rgba(255, 255, 255, 0.3);
                 transform: translateY(-2px);
-                box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.3);
+                box-shadow: 0 12px 40px 0 rgba(0,0,0,0.7);
             }
 
-            button:active {
-                transform: translateY(0);
-            }
+            button:active { transform: translateY(0); }
 
-            button:disabled {
-                opacity: 0.5;
-                cursor: not-allowed;
-            }
+            button:disabled { opacity: 0.6; cursor: not-allowed; }
 
-            .image-container {
-                text-align: center;
-                margin-top: 40px;
-            }
+            .image-container { text-align: center; margin-top: 40px; }
 
-            .image-container img {
-                max-width: 100%;
-                border-radius: 12px;
-                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            }
+            .image-container img { max-width: 100%; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
 
-            .error-message {
-                color: #ff6b6b;
-                font-size: 14px;
-                margin-top: 10px;
-                text-align: center;
-            }
+            .error-message { color: #ff6b6b; font-size: 14px; margin-top: 10px; text-align: center; }
 
-            .loading {
-                text-align: center;
-                color: #888888;
-                font-size: 14px;
-                margin-top: 20px;
-            }
+            .loading { text-align: center; color: #ffd66b; font-size: 12px; margin-top: 20px; }
         </style>
     </head>
     <body>
