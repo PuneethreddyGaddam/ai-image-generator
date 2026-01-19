@@ -296,11 +296,15 @@
             <div class="button-container">
                 <button onclick="generate_image()" id="generate_button">Generate Image</button>
                 <div id="error-msg" class="error-message"></div>
-                <div id="loading" class="loading" style="display: none;">Generating your image...</div>
             </div>
+        </div>
 
-            <!-- Generated Image -->
-            <div id="generated-image" class="image-container"></div>
+        <!-- Full-screen loading overlay (hidden by default) -->
+        <div id="loadingOverlay" style="display: none;">
+            <div class="loading-content">
+                <div class="spinner"></div>
+                <p class="loading-text">GENERATING YOUR IMAGE<span class="dots"></span></p>
+            </div>
         </div>
 
         <script>
@@ -335,34 +339,127 @@
                     customPrompt: finalPrompt
                 }
 
-                try {
-                    loadingDiv.style.display = 'block';
-                    generateBtn.disabled = true;
+                // Show full-screen overlay immediately and disable the button
+                const loadingOverlay = document.getElementById('loadingOverlay');
+                loadingOverlay.style.display = 'flex';
+                generateBtn.disabled = true;
 
+                // Store generation data so result page can read it
+                const generationData = {
+                    model: model,
+                    image_type: image_type,
+                    category: category,
+                    mode: mode,
+                    image_size: image_size,
+                    customPrompt: finalPrompt
+                };
+                sessionStorage.setItem('generationData', JSON.stringify(generationData));
+
+                // Use AbortController to implement a timeout for the API call
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 60000); // 60s timeout
+
+                try {
                     const response = await fetch('http://localhost:5000/generate-image', {
                         method: "POST",
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(data)
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data),
+                        signal: controller.signal
                     });
-                    
-                    const finalRes = await response.json();
-                    console.log(finalRes);
-                    
-                    if (finalRes.success) {
-                        const imageDiv = document.getElementById('generated-image');
-                        imageDiv.innerHTML = `<img src="${finalRes.image}" alt="Generated Image">`;
-                    } else {
-                        errorMsg.textContent = finalRes.error || "Failed to generate image";
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
                     }
+
+                    const finalRes = await response.json();
+                    console.log('API response:', finalRes);
+
+                    if (finalRes && finalRes.success) {
+                        sessionStorage.setItem('generatedImage', finalRes.image || '');
+                        sessionStorage.setItem('generationSuccess', 'true');
+                        // redirect to results page
+                        window.location.href = 'result.html';
+                        return;
+                    }
+
+                    // API returned success:false
+                    sessionStorage.setItem('generationSuccess', 'false');
+                    sessionStorage.setItem('errorMessage', (finalRes && finalRes.error) || 'Unknown error occurred');
+                    window.location.href = 'result.html';
+
                 } catch (error) {
-                    errorMsg.textContent = "Error: " + error.message;
+                    console.error('Generation error:', error);
+                    // Differentiate abort error
+                    const msg = (error && error.name === 'AbortError') ? 'Request timed out. Please try again.' : (error.message || 'Network error.');
+                    sessionStorage.setItem('generationSuccess', 'false');
+                    sessionStorage.setItem('errorMessage', msg);
+                    window.location.href = 'result.html';
                 } finally {
-                    loadingDiv.style.display = 'none';
+                    clearTimeout(timeout);
+                    // overlay will disappear on navigation; re-enable button in case navigation is prevented
                     generateBtn.disabled = false;
+                    try { loadingOverlay.style.display = 'none'; } catch (e) {}
                 }
             }
         </script>
+
+        <style>
+            /* Loading overlay styles */
+            #loadingOverlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(0, 0, 0, 0.92);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+                display: none;
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+                animation: fadeIn 0.3s ease;
+            }
+
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+
+            .loading-content { text-align: center; }
+
+            .spinner {
+                width: 100px;
+                height: 100px;
+                border: 6px solid rgba(255, 214, 107, 0.12);
+                border-top: 6px solid #ffd66b;
+                border-radius: 50%;
+                margin: 0 auto 24px;
+                animation: spin 1s linear infinite;
+                box-shadow: 0 0 28px rgba(255, 214, 107, 0.45);
+            }
+
+            @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+            .loading-text {
+                font-size: 13px;
+                color: #ffd66b;
+                letter-spacing: 2px;
+                text-shadow: 0 0 10px rgba(255, 214, 107, 0.5);
+                font-family: 'Press Start 2P', monospace;
+            }
+
+            .dots::after {
+                content: '.';
+                animation: dots 1.5s infinite steps(3,end);
+            }
+
+            @keyframes dots {
+                0% { content: '.'; }
+                33% { content: '..'; }
+                66% { content: '...'; }
+                100% { content: ''; }
+            }
+        </style>
     </body>
 </html>

@@ -1,0 +1,235 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>AI Image Generator - Result</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+      :root {
+        --bg-start: #2b1b66;
+        --bg-end: #1f1548;
+        --gold: #ffd66b;
+        --accent-error: #ff6b6b;
+      }
+
+      html,body { height: 100%; }
+      body {
+        margin: 0;
+        font-family: 'Press Start 2P', monospace;
+        background: linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%);
+        color: #f6efd9;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        padding: 28px 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .header { text-align: center; margin-bottom: 18px; }
+      .header h1 { color: var(--gold); font-size: 22px; margin: 6px 0; }
+
+      .card {
+        width: 100%;
+        max-width: 980px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+        border-radius: 12px;
+        padding: 22px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+      }
+
+      .prompt-box {
+        background: rgba(18,12,42,0.7);
+        border: 2px solid rgba(255,214,107,0.06);
+        padding: 14px;
+        border-radius: 10px;
+        color: #ffd;
+        font-size: 12px;
+        margin-bottom: 18px;
+        word-break: break-word;
+      }
+
+      .image-wrap {
+        text-align: center;
+        margin-bottom: 18px;
+      }
+
+      .image-wrap img {
+        max-width: 100%;
+        width: 100%;
+        max-width: 800px;
+        border-radius: 12px;
+        box-shadow: 0 30px 80px rgba(0,0,0,0.7);
+        opacity: 0;
+        transform: translateY(6px);
+        transition: opacity 0.6s ease, transform 0.6s ease;
+      }
+
+      .image-wrap img.loaded { opacity: 1; transform: translateY(0); }
+
+      .meta-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+
+      .meta-item {
+        background: rgba(255,255,255,0.02);
+        padding: 10px;
+        border-radius: 8px;
+        font-size: 11px;
+      }
+
+      .actions { display:flex; justify-content:center; gap: 12px; margin-top: 8px; }
+      .actions a button, .actions button { background: linear-gradient(180deg,#ffd66b22,#ffd66b11); border:2px solid var(--gold); color:#1a0f36; padding: 10px 14px; border-radius:8px; cursor:pointer; font-family:'Press Start 2P', monospace; }
+
+      .error-state { text-align:center; padding: 32px 12px; }
+      .error-state h2 { color: var(--accent-error); font-size: 14px; margin-bottom: 10px; }
+      .error-icon { font-size: 48px; margin-bottom: 8px; color: var(--accent-error); }
+
+      @media (max-width:600px){
+        .card { padding: 16px; }
+        .header h1 { font-size: 16px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>AI Image Generator</h1>
+    </div>
+
+    <div class="card" id="resultCard">
+      <!-- Success view -->
+      <div id="successView" style="display:none;">
+        <div class="prompt-box"><strong>Your Prompt:</strong>
+          <div id="promptText" style="margin-top:8px;font-size:12px;color:#ffd"></div>
+        </div>
+
+        <div class="image-wrap">
+          <img id="generatedImg" src="" alt="Generated image" />
+        </div>
+
+        <div class="meta-grid">
+          <div class="meta-item"><strong>Model</strong><div id="metaModel" style="margin-top:6px;font-size:11px"></div></div>
+          <div class="meta-item"><strong>Type</strong><div id="metaType" style="margin-top:6px;font-size:11px"></div></div>
+          <div class="meta-item"><strong>Category</strong><div id="metaCategory" style="margin-top:6px;font-size:11px"></div></div>
+          <div class="meta-item"><strong>Mode</strong><div id="metaMode" style="margin-top:6px;font-size:11px"></div></div>
+          <div class="meta-item"><strong>Size</strong><div id="metaSize" style="margin-top:6px;font-size:11px"></div></div>
+        </div>
+
+        <div class="actions">
+          <a id="downloadLink" download=""><button id="downloadBtn">DOWNLOAD IMAGE</button></a>
+          <button id="shareBtn">SHARE</button>
+          <button id="anotherBtn">GENERATE ANOTHER</button>
+        </div>
+      </div>
+
+      <!-- Error view -->
+      <div id="errorView" style="display:none;">
+        <div class="error-state">
+          <div class="error-icon">☹️</div>
+          <h2>FAILED TO GENERATE IMAGE</h2>
+          <div id="errorMessage" style="color:#ffd; font-size:12px; margin-bottom:12px;"></div>
+          <div class="actions" style="justify-content:center;">
+            <button id="tryAgainBtn">TRY AGAIN</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // result.html script: runs on load, reads sessionStorage and displays result or error
+      document.addEventListener('DOMContentLoaded', () => {
+        try {
+          const success = sessionStorage.getItem('generationSuccess');
+          const dataRaw = sessionStorage.getItem('generationData');
+          const imageUrl = sessionStorage.getItem('generatedImage');
+          const errorMsg = sessionStorage.getItem('errorMessage');
+
+          const successView = document.getElementById('successView');
+          const errorView = document.getElementById('errorView');
+
+          // Default: treat anything other than 'true' as failure
+          if (success === 'true' && imageUrl) {
+            // Parse metadata safely
+            let genData = {};
+            try { genData = JSON.parse(dataRaw || '{}'); } catch (e) { genData = {}; }
+
+            // Populate prompt and metadata
+            document.getElementById('promptText').textContent = genData.customPrompt || '(no prompt)';
+            document.getElementById('metaModel').textContent = genData.model || 'auto';
+            document.getElementById('metaType').textContent = genData.image_type || '-';
+            document.getElementById('metaCategory').textContent = genData.category || '-';
+            document.getElementById('metaMode').textContent = genData.mode || '-';
+            document.getElementById('metaSize').textContent = genData.image_size || '-';
+
+            // Set image src and download link
+            const imgEl = document.getElementById('generatedImg');
+            imgEl.src = imageUrl;
+            imgEl.onload = () => imgEl.classList.add('loaded');
+            imgEl.onerror = () => {
+              // If image fails to load, show error view instead
+              showError('Received image URL is invalid or unreachable.');
+            };
+
+            // Setup download filename
+            const timestamp = Date.now();
+            const filename = `ai-generated-${timestamp}.png`;
+            const downloadLink = document.getElementById('downloadLink');
+            downloadLink.download = filename;
+            downloadLink.href = imageUrl || '';
+
+            // Share button: copy image URL to clipboard
+            document.getElementById('shareBtn').addEventListener('click', async () => {
+              try {
+                await navigator.clipboard.writeText(imageUrl);
+                alert('Image URL copied to clipboard');
+              } catch (e) {
+                alert('Unable to copy to clipboard');
+              }
+            });
+
+            // Generate another
+            document.getElementById('anotherBtn').addEventListener('click', () => {
+              // Optionally clear storage
+              sessionStorage.removeItem('generatedImage');
+              sessionStorage.removeItem('generationSuccess');
+              sessionStorage.removeItem('errorMessage');
+              // keep generationData if user wants to edit, or remove to be safe
+              // sessionStorage.removeItem('generationData');
+              window.location.href = 'index.html';
+            });
+
+            successView.style.display = 'block';
+            errorView.style.display = 'none';
+
+          } else {
+            // Show error view
+            showError(errorMsg || 'Unknown error occurred during generation.');
+          }
+        } catch (e) {
+          console.error('Result page error:', e);
+          showError('An unexpected error occurred while loading the result.');
+        }
+
+        // Try again / TRY AGAIN button handler
+        document.getElementById('tryAgainBtn').addEventListener('click', () => {
+          // clear sensitive items and go back
+          sessionStorage.removeItem('generatedImage');
+          sessionStorage.removeItem('generationSuccess');
+          sessionStorage.removeItem('errorMessage');
+          window.location.href = 'index.html';
+        });
+
+        function showError(message) {
+          document.getElementById('errorMessage').textContent = message;
+          document.getElementById('errorView').style.display = 'block';
+          document.getElementById('successView').style.display = 'none';
+        }
+      });
+    </script>
+  </body>
+</html>

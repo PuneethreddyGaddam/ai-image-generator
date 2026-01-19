@@ -14,7 +14,7 @@ app.use(express.static('public'));
 
 async function generateImage(promptText, size = "1024x1024") {
    const openai = new OpenAI({
-      apiKey: process.env.OPENAI_KEY, 
+      apiKey: process.env.OPENAI_KEY || process.env.OPENAI_API_KEY,
    });
 
    try {
@@ -75,8 +75,8 @@ app.post('/generate-image', async (req, res) => {
       });
 
    } catch (err) {
-      console.error("Error:", err.message);
-      res.status(500).json({ success: false, error: err.message || "Failed to generate image" });
+      console.error("Error generating image (server):", err);
+      res.status(500).json({ success: false, error: "failed to generate" });
    }
 });
 
