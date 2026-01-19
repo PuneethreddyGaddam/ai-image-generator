@@ -214,12 +214,7 @@
                 <div class="form-group">
                     <label>Choose Model</label>
                     <select id="model">
-                        <option value="">-- Select Model --</option>
-                        <option value="sd2">Stable Diffusion 2</option>
-                        <option value="sdxl">SDXL</option>
-                        <option value="nanobanana">Nano Banana</option>
-                        <option value="dalle3">DALL·E 3</option>
-                        <option value="any">Auto (Best available)</option>
+                        <option value="dalle3" selected>DALL·E 3</option>
                     </select>
                 </div>
 
@@ -238,20 +233,7 @@
                     </select>
                 </div>
 
-                <!-- Category -->
-                <div class="form-group">
-                    <label>Category</label>
-                    <select id="category">
-                        <option value="">-- Select Category --</option>
-                        <option value="clothing">Clothing</option>
-                        <option value="landscape">Landscape</option>
-                        <option value="interior">Interior</option>
-                        <option value="portrait">Portrait</option>
-                        <option value="product">Product</option>
-                        <option value="animals">Animals</option>
-                        <option value="vehicles">Vehicles</option>
-                    </select>
-                </div>
+                <!-- Category removed (not needed) -->
 
                 <!-- Mode -->
                 <div class="form-group">
@@ -311,7 +293,8 @@
             async function generate_image(){
                 const model = document.getElementById('model').value;
                 const image_type = document.getElementById('image_Type').value;
-                const category = document.getElementById('category').value;
+                const categoryEl = document.getElementById('category');
+                const category = categoryEl ? categoryEl.value : '';
                 const mode = document.getElementById('mode').value;
                 const image_size = document.getElementById('size').value;
                 const customPrompt = document.getElementById('prompt').value;
