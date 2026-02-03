@@ -2,13 +2,18 @@ import express from 'express';
 import cors from 'cors';
 import OpenAI from 'openai';
 import env from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 env.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(express.json());
 app.use(cors());
-app.use(express.static('public')); 
+app.use(express.static(path.join(__dirname, 'public')));
 
 
 
@@ -36,7 +41,7 @@ async function generateImage(promptText, size = "1024x1024") {
 
 
 function firstEndpoint(req, res) {
-   res.send('server created');
+   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 }
 
 app.get('/', firstEndpoint);
