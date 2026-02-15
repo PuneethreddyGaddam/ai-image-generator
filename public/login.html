@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Login - AI Image Generator</title>
+    <style>
+      body { font-family: Arial, Helvetica, sans-serif; background: #0f0b1a; color: #fff; display:flex; align-items:center; justify-content:center; height:100vh; }
+      .card { background: #141025; padding: 24px; border-radius:8px; width:360px; box-shadow: 0 8px 40px rgba(0,0,0,0.6);} 
+      label { display:block; margin-top:12px; font-size:13px; color:#ffd66b }
+      input { width:100%; padding:10px; margin-top:6px; border-radius:6px; border:1px solid #2b2447; background:#0b0714; color:#fff }
+      button { margin-top:12px; width:100%; padding:10px; border-radius:6px; border:none; cursor:pointer; background:#ffd66b; color:#1a0f36; font-weight:700 }
+      .muted { font-size:12px; color:#bbb; margin-top:8px }
+      .row { display:flex; gap:8px }
+      .row button { flex:1 }
+      .token { word-break:break-all; font-size:12px; background:#0b0714; padding:8px; border-radius:6px; margin-top:8px }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h3>Sign in / Sign up</h3>
+      <label>Email</label>
+      <input id="email" type="email" placeholder="you@example.com" />
+
+      <label>Password</label>
+      <input id="password" type="password" placeholder="password (for email/password)" />
+
+      <div class="row">
+        <button id="signup">Create account</button>
+        <button id="signin">Sign in</button>
+      </div>
+
+      <button id="magic">Send Magic Link</button>
+
+      <div class="muted">Or sign in with:</div>
+      <div class="row">
+        <button id="google">Google</button>
+        <button id="github">GitHub</button>
+      </div>
+
+      <button id="signout">Sign out</button>
+
+      <div id="status" class="muted"></div>
+      <div id="session" class="token" style="display:none"></div>
+    </div>
+
+    <script type="module" src="/js/auth.js"></script>
+  </body>
+</html>

@@ -343,12 +343,17 @@
                 const timeout = setTimeout(() => controller.abort(), 60000); // 60s timeout
 
                 try {
+                    // include Supabase access token if present in sessionStorage
+                    const headers = { 'Content-Type': 'application/json' };
+                    const token = sessionStorage.getItem('supabase_access_token');
+                    if (token) headers['Authorization'] = 'Bearer ' + token;
+
                     const response = await fetch('/generate-image', {
-                        method: "POST",
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(data),
-                        signal: controller.signal
-                    });
+                            method: 'POST',
+                            headers,
+                            body: JSON.stringify(data),
+                            signal: controller.signal
+                        });
 
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
