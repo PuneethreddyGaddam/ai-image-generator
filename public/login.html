@@ -1,49 +1,345 @@
 <!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Login - AI Image Generator</title>
-    <style>
-      body { font-family: Arial, Helvetica, sans-serif; background: #0f0b1a; color: #fff; display:flex; align-items:center; justify-content:center; height:100vh; }
-      .card { background: #141025; padding: 24px; border-radius:8px; width:360px; box-shadow: 0 8px 40px rgba(0,0,0,0.6);} 
-      label { display:block; margin-top:12px; font-size:13px; color:#ffd66b }
-      input { width:100%; padding:10px; margin-top:6px; border-radius:6px; border:1px solid #2b2447; background:#0b0714; color:#fff }
-      button { margin-top:12px; width:100%; padding:10px; border-radius:6px; border:none; cursor:pointer; background:#ffd66b; color:#1a0f36; font-weight:700 }
-      .muted { font-size:12px; color:#bbb; margin-top:8px }
-      .row { display:flex; gap:8px }
-      .row button { flex:1 }
-      .token { word-break:break-all; font-size:12px; background:#0b0714; padding:8px; border-radius:6px; margin-top:8px }
-    </style>
-  </head>
-  <body>
-    <div class="card">
-      <h3>Sign in / Sign up</h3>
-      <label>Email</label>
-      <input id="email" type="email" placeholder="you@example.com" />
+<html lang="en">
 
-      <label>Password</label>
-      <input id="password" type="password" placeholder="password (for email/password)" />
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Secured Login - AI Image Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #050510;
+      --card-bg: rgba(20, 20, 45, 0.7);
+      --accent-color: #ffd66b;
+      --text-color: #f6efd9;
+      --input-bg: rgba(0, 0, 0, 0.3);
+      --btn-hover: #ffc233;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
-      <div class="row">
-        <button id="signup">Create account</button>
-        <button id="signin">Sign in</button>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at 0% 0%, #1a0f36 0%, #050510 50%, #0a0a20 100%);
+      color: var(--text-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    /* Cosmic light effects */
+    .blob {
+      position: absolute;
+      width: 60vw;
+      height: 60vw;
+      background: radial-gradient(circle, rgba(255, 214, 107, 0.08) 0%, transparent 70%);
+      border-radius: 50%;
+      z-index: -1;
+      animation: pulse 15s infinite alternate;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: translate(-10%, -10%) scale(1);
+      }
+
+      100% {
+        transform: translate(10%, 10%) scale(1.2);
+      }
+    }
+
+    .card {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+      padding: 16px 24px;
+      border-radius: 32px;
+      width: 100%;
+      max-width: 440px;
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+      border: 1px solid rgba(255, 214, 107, 0.1);
+      box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(255, 214, 107, 0.03);
+      animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      margin: auto;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h3 {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 2px;
+      color: var(--accent-color);
+      letter-spacing: -1px;
+      background: linear-gradient(180deg, #fff, #ffd66b);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: rgba(246, 239, 217, 0.5);
+      margin-bottom: 12px;
+      line-height: 1.6;
+    }
+
+    label {
+      display: block;
+      margin-top: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: rgba(255, 214, 107, 0.6);
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 14px;
+      margin-top: 6px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(0, 0, 0, 0.4);
+      color: #fff;
+      font-family: inherit;
+      font-size: 16px;
+      transition: var(--transition);
+    }
+
+    input:focus {
+      outline: none;
+      border-color: rgba(255, 214, 107, 0.4);
+      background: rgba(0, 0, 0, 0.6);
+      box-shadow: 0 0 0 1px rgba(255, 214, 107, 0.2);
+    }
+
+    .btn-primary {
+      margin-top: 24px;
+      width: 100%;
+      padding: 14px;
+      border-radius: 16px;
+      border: none;
+      cursor: pointer;
+      background: linear-gradient(135deg, #ffd66b 0%, #ffb800 100%);
+      color: #1a0f36;
+      font-weight: 800;
+      font-size: 16px;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 15px 30px -5px rgba(255, 214, 107, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 20px 40px -5px rgba(255, 214, 107, 0.5);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .row {
+      display: flex;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .row-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .row-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .divider {
+      margin: 12px 0;
+      display: flex;
+      align-items: center;
+      text-align: center;
+      color: rgba(246, 239, 217, 0.3);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .divider:not(:empty)::before {
+      margin-right: 12px;
+    }
+
+    .divider:not(:empty)::after {
+      margin-left: 12px;
+    }
+
+    .oauth-btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .oauth-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    #status {
+      margin-top: 20px;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      text-align: center;
+      background: rgba(255, 68, 68, 0.1);
+      color: #ff6b6b;
+      display: none;
+    }
+
+    #status.active {
+      display: block;
+    }
+
+    #status.success {
+      background: rgba(0, 200, 81, 0.1);
+      color: #00c851;
+    }
+
+    .token-box {
+      display: none;
+      margin-top: 20px;
+      font-size: 11px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 12px;
+      border-radius: 8px;
+      word-break: break-all;
+      color: rgba(255, 255, 255, 0.5);
+      border: 1px dashed rgba(255, 255, 255, 0.1);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="blob"></div>
+  <div class="card">
+    <h3 id="auth-title">Welcome Back</h3>
+    <p class="subtitle" id="auth-subtitle">Join the elite creators using our AI engine</p>
+
+    <!-- Global Actions -->
+    <button id="google" class="btn-primary"
+      style="margin-top: 0; background: #fff; color: #000; box-shadow: 0 10px 20px rgba(0,0,0,0.2);">
+      <svg style="width:20px;height:20px" viewBox="0 0 24 24">
+        <path fill="currentColor"
+          d="M21.35,11.1H12.18V13.83H18.69C18.36,17.64 15.19,19.27 12.19,19.27C9.03,19.27 6.59,17.38 6.59,12.03C6.59,6.68 9.03,4.79 12.19,4.79C13.9,4.79 15.58,5.44 16.73,6.58L18.66,4.65C16.9,3 14.73,2.06 12.19,2.06C6.7,2.06 3.71,6.18 3.71,12.03C3.71,17.88 6.7,22 12.19,22C18.3,22 21.5,17.5 21.5,12C21.5,11.69 21.47,11.39 21.35,11.1V11.1Z" />
+      </svg>
+      Continue with Google
+    </button>
+
+    <div class="divider">Or manage your account</div>
+
+    <!-- Login View -->
+    <div id="login-view">
+      <label for="email">Email Address</label>
+      <input id="email" type="email" placeholder="name@example.com" />
+
+      <label for="password">Password</label>
+      <input id="password" type="password" placeholder="••••••••" />
+
+      <div class="row" style="margin-top: 24px;">
+        <button id="signin" class="row-btn"
+          style="background: rgba(255, 214, 107, 0.1); color: var(--accent-color); border-color: rgba(255, 214, 107, 0.2); width:100%;">Sign
+          In</button>
       </div>
-
-      <button id="magic">Send Magic Link</button>
-
-      <div class="muted">Or sign in with:</div>
-      <div class="row">
-        <button id="google">Google</button>
-        <button id="github">GitHub</button>
-      </div>
-
-      <button id="signout">Sign out</button>
-
-      <div id="status" class="muted"></div>
-      <div id="session" class="token" style="display:none"></div>
+      <p style="text-align: center; margin-top: 20px; font-size: 12px; color: rgba(246, 239, 217, 0.5);">
+        Don't have an account? <a href="#" id="show-signup"
+          style="color: #ffd66b; text-decoration: none; font-weight: bold;">Sign Up</a>
+      </p>
     </div>
 
-    <script type="module" src="/js/auth.js"></script>
-  </body>
+    <!-- Signup View -->
+    <div id="signup-view" style="display: none;">
+      <div class="row" style="margin-top:0">
+        <div style="flex:1">
+          <label for="firstName">First Name</label>
+          <input id="firstName" type="text" placeholder="John" />
+        </div>
+        <div style="flex:1">
+          <label for="lastName">Last Name</label>
+          <input id="lastName" type="text" placeholder="Doe" />
+        </div>
+      </div>
+
+      <label for="signup-email">Email Address</label>
+      <input id="signup-email" type="email" placeholder="name@example.com" />
+
+      <label for="signup-password">Password</label>
+      <input id="signup-password" type="password" placeholder="••••••••" />
+
+      <div class="row" style="margin-top: 32px;">
+        <button id="signup" class="row-btn"
+          style="background: var(--accent-color); color: #1a0f36; font-weight: 800; width:100%; border:none; padding: 16px;">Confirm
+          & Create Account</button>
+      </div>
+      <p style="text-align: center; margin-top: 20px; font-size: 12px; color: rgba(246, 239, 217, 0.5);">
+        Already have an account? <a href="#" id="show-login"
+          style="color: #ffd66b; text-decoration: none; font-weight: bold;">Sign In</a>
+      </p>
+    </div>
+
+    <div class="divider">Or explore first</div>
+    <button id="guest-btn" class="oauth-btn" style="background: rgba(255,255,255,0.02); margin-top: 5px;">Continue as
+      Guest</button>
+
+    <div id="status"></div>
+    <div id="session" class="token-box"></div>
+  </div>
+
+  <script type="module" src="/js/auth.js"></script>
+</body>
+
 </html>

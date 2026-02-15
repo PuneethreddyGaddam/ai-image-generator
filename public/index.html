@@ -1,453 +1,681 @@
 <html>
-    <head>
-        <title>AI Image Generator</title>
-        <style>
-            @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
+<head>
+    <title>AI Image Generator</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(180deg, #2b1b66 0%, #1f1548 100%);
+            color: #f6efd9;
+            font-family: 'Press Start 2P', monospace;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 44px;
+            margin-bottom: 6px;
+            color: #ffd66b;
+            letter-spacing: 2px;
+            text-shadow: 4px 4px 0 #1a0f36, 8px 8px 18px rgba(0, 0, 0, 0.6);
+        }
+
+        .header p {
+            font-family: 'Press Start 2P', monospace;
+            color: #ffd66b;
+            font-size: 12px;
+            margin-top: 6px;
+            opacity: 0.95;
+            letter-spacing: 1px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #ffd66b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Press Start 2P', monospace;
+        }
+
+        label span {
+            color: #ff4444;
+            margin-left: 4px;
+        }
+
+        select {
+            padding: 12px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.04);
+            color: #ffd;
+            border-radius: 12px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
+        }
+
+        select:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.6);
+        }
+
+        select:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        select option {
+            background-color: #2b2140;
+            color: #ffd66b;
+        }
+
+        .prompt-section {
+            margin-bottom: 30px;
+        }
+
+        .prompt-wrapper {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            padding: 18px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.01), rgba(255, 255, 255, 0.02));
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+        }
+
+        #prompt-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            z-index: 0;
+            pointer-events: none;
+            mix-blend-mode: screen;
+        }
+
+        textarea {
+            position: relative;
+            z-index: 1;
+            padding: 16px;
+            border: 2px solid #3a2a7a;
+            background-color: rgba(12, 8, 28, 0.6);
+            color: #f6efd9;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: 'Courier New', Courier, monospace;
+            resize: vertical;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+        }
+
+        textarea:hover {
+            border-color: #5a4aa8;
+            background-color: rgba(18, 12, 42, 0.7);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #ffd66b;
+            background-color: rgba(18, 12, 42, 0.75);
+        }
+
+        textarea::placeholder {
+            color: #bba86f;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        button {
+            padding: 12px 34px;
+            font-size: 12px;
+            font-weight: 700;
+            border: 2px solid #ffd66b;
+            background: linear-gradient(180deg, #ffd66b22, #ffd66b11);
+            color: #1a0f36;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
+            font-family: 'Press Start 2P', monospace;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.7);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .image-container {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .error-message {
+            color: #ff6b6b;
+            font-size: 14px;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .loading {
+            text-align: center;
+            color: #ffd66b;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+
+        /* --- EXIT MODAL STYLES --- */
+        #logoutModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        #logoutModal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+            padding: 40px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 214, 107, 0.15);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+            transform: scale(0.9);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        #logoutModal.active .modal-card {
+            transform: scale(1);
+        }
+
+        .modal-card h4 {
+            font-size: 14px;
+            margin-bottom: 24px;
+            line-height: 1.6;
+            color: #ffd66b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: inherit;
+        }
+
+        .btn-confirm {
+            background: #ff4444;
+            color: white;
+            border: none;
+            box-shadow: 0 10px 20px rgba(255, 68, 68, 0.2);
+        }
+
+        .btn-confirm:hover {
+            background: #ff6666;
+            transform: translateY(-2px);
+        }
+
+        .btn-cancel {
+            background: rgba(255, 255, 255, 0.05);
+            color: #ccc;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* --- DISSOLVE ANIMATION --- */
+        body.dissolving {
+            pointer-events: none;
+        }
+
+        .dissolve-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #050510;
+            z-index: 11000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s ease;
+        }
+
+        body.dissolving .dissolve-layer {
+            opacity: 1;
+        }
+
+        body.dissolving .container {
+            filter: blur(10px);
+            transform: scale(0.95);
+            opacity: 0;
+            transition: all 0.8s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="logoutModal">
+        <div class="modal-card">
+            <h4>Are you sure you want to leave the workspace?</h4>
+            <div class="modal-actions">
+                <button class="modal-btn btn-confirm" id="confirmLogout">Yes, Exit</button>
+                <button class="modal-btn btn-cancel" id="cancelLogout">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <div class="dissolve-layer"></div>
+    <script>
+        // Auth guard: check for session/token before showing the page
+        (function () {
+            const token = sessionStorage.getItem('supabase_access_token');
+            const isGuest = sessionStorage.getItem('guest_mode') === 'true';
+            // Check hash for OAuth recovery or sign-in redirect
+            const isOauth = window.location.hash.includes('access_token=');
+
+            if (!token && !isOauth && !isGuest) {
+                window.location.href = 'login.html';
             }
+        })();
+    </script>
+    <div class="container">
+        <div class="header">
+            <div style="text-align: right; margin-bottom: 10px;">
+                <button id="signout-header"
+                    style="padding: 5px 10px; font-size: 8px; border: 1px solid #ffd66b; background: transparent; color: #ffd66b;">Sign
+                    Out</button>
+            </div>
+            <h1>AI Image Generator</h1>
+            <p>Create stunning images with AI-powered generation</p>
+        </div>
 
-            body {
-                background: linear-gradient(180deg, #2b1b66 0%, #1f1548 100%);
-                color: #f6efd9;
-                font-family: 'Press Start 2P', monospace;
-                min-height: 100vh;
-                padding: 40px 20px;
-            }
-
-            .container {
-                max-width: 900px;
-                margin: 0 auto;
-            }
-
-            .header {
-                text-align: center;
-                margin-bottom: 40px;
-            }
-
-            .header h1 {
-                font-family: 'Press Start 2P', monospace;
-                font-size: 44px;
-                margin-bottom: 6px;
-                color: #ffd66b;
-                letter-spacing: 2px;
-                text-shadow: 4px 4px 0 #1a0f36, 8px 8px 18px rgba(0,0,0,0.6);
-            }
-
-            .header p {
-                font-family: 'Press Start 2P', monospace;
-                color: #ffd66b;
-                font-size: 12px;
-                margin-top: 6px;
-                opacity: 0.95;
-                letter-spacing: 1px;
-            }
-
-            .form-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                gap: 24px;
-                margin-bottom: 30px;
-            }
-
-            .form-group {
-                display: flex;
-                flex-direction: column;
-            }
-
-            label {
-                font-size: 12px;
-                font-weight: 600;
-                margin-bottom: 10px;
-                color: #ffd66b;
-                text-transform: uppercase;
-                letter-spacing: 1px;
-                font-family: 'Press Start 2P', monospace;
-            }
-
-            label span {
-                color: #ff4444;
-                margin-left: 4px;
-            }
-
-            select {
-                padding: 12px 16px;
-                border: 1px solid rgba(255, 255, 255, 0.06);
-                background: rgba(255, 255, 255, 0.04);
-                color: #ffd;
-                border-radius: 12px;
-                font-size: 14px;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                font-family: inherit;
-                backdrop-filter: blur(6px);
-                -webkit-backdrop-filter: blur(6px);
-                box-shadow: 0 8px 32px 0 rgba(0,0,0,0.6);
-            }
-
-            select:hover {
-                border-color: rgba(255, 255, 255, 0.12);
-                background: rgba(255, 255, 255, 0.06);
-                box-shadow: 0 12px 40px 0 rgba(0,0,0,0.6);
-            }
-
-            select:focus {
-                outline: none;
-                border-color: rgba(255, 255, 255, 0.2);
-                background: rgba(255, 255, 255, 0.06);
-            }
-
-            select option {
-                background-color: #2b2140;
-                color: #ffd66b;
-            }
-
-            .prompt-section {
-                margin-bottom: 30px;
-            }
-
-            .prompt-wrapper {
-                position: relative;
-                border-radius: 12px;
-                overflow: hidden;
-                padding: 18px;
-                background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));
-                box-shadow: 0 8px 32px rgba(0,0,0,0.6);
-            }
-
-            #prompt-canvas {
-                position: absolute;
-                inset: 0;
-                width: 100%;
-                height: 100%;
-                display: block;
-                z-index: 0;
-                pointer-events: none;
-                mix-blend-mode: screen;
-            }
-
-            textarea {
-                position: relative;
-                z-index: 1;
-                padding: 16px;
-                border: 2px solid #3a2a7a;
-                background-color: rgba(12,8,28,0.6);
-                color: #f6efd9;
-                border-radius: 8px;
-                font-size: 13px;
-                font-family: 'Courier New', Courier, monospace;
-                resize: vertical;
-                transition: all 0.3s ease;
-                backdrop-filter: blur(6px);
-                -webkit-backdrop-filter: blur(6px);
-                box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
-            }
-
-            textarea:hover {
-                border-color: #5a4aa8;
-                background-color: rgba(18,12,42,0.7);
-            }
-
-            textarea:focus {
-                outline: none;
-                border-color: #ffd66b;
-                background-color: rgba(18,12,42,0.75);
-            }
-
-            textarea::placeholder {
-                color: #bba86f;
-            }
-
-            .button-container {
-                text-align: center;
-                margin-bottom: 50px;
-            }
-
-            button {
-                padding: 12px 34px;
-                font-size: 12px;
-                font-weight: 700;
-                border: 2px solid #ffd66b;
-                background: linear-gradient(180deg,#ffd66b22,#ffd66b11);
-                color: #1a0f36;
-                border-radius: 8px;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                text-transform: uppercase;
-                letter-spacing: 2px;
-                backdrop-filter: blur(6px);
-                -webkit-backdrop-filter: blur(6px);
-                box-shadow: 0 8px 32px 0 rgba(0,0,0,0.6);
-                font-family: 'Press Start 2P', monospace;
-            }
-
-            button:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 12px 40px 0 rgba(0,0,0,0.7);
-            }
-
-            button:active { transform: translateY(0); }
-
-            button:disabled { opacity: 0.6; cursor: not-allowed; }
-
-            .image-container { text-align: center; margin-top: 40px; }
-
-            .image-container img { max-width: 100%; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
-
-            .error-message { color: #ff6b6b; font-size: 14px; margin-top: 10px; text-align: center; }
-
-            .loading { text-align: center; color: #ffd66b; font-size: 12px; margin-top: 20px; }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="header">
-                <h1>AI Image Generator</h1>
-                <p>Create stunning images with AI-powered generation</p>
+        <div class="form-grid">
+            <!-- Model Selection -->
+            <div class="form-group">
+                <label>Choose Model</label>
+                <select id="model">
+                    <option value="dalle3" selected>DALL·E 3</option>
+                </select>
             </div>
 
-            <div class="form-grid">
-                <!-- Model Selection -->
-                <div class="form-group">
-                    <label>Choose Model</label>
-                    <select id="model">
-                        <option value="dalle3" selected>DALL·E 3</option>
-                    </select>
-                </div>
-
-                <!-- Image Type -->
-                <div class="form-group">
-                    <label>Image Type</label>
-                    <select id="image_Type">
-                        <option value="">-- Select Type --</option>
-                        <option value="realistic">Realistic</option>
-                        <option value="3d">3D</option>
-                        <option value="illustration">Illustration</option>
-                        <option value="anime">Anime</option>
-                        <option value="concept-art">Concept Art</option>
-                        <option value="photography">Photography</option>
-                        <option value="pixel">Pixel Art</option>
-                    </select>
-                </div>
-
-                <!-- Category removed (not needed) -->
-
-                <!-- Mode -->
-                <div class="form-group">
-                    <label>Mode</label>
-                    <select id="mode">
-                        <option value="">-- Select Mode --</option>
-                        <option value="cinematic">Cinematic</option>
-                        <option value="minimalist">Minimalist</option>
-                        <option value="vibrant">Vibrant</option>
-                        <option value="dark">Dark</option>
-                        <option value="fantasy">Fantasy</option>
-                        <option value="retro">Retro</option>
-                        <option value="scifi">Sci-Fi</option>
-                    </select>
-                </div>
-
-                <!-- Size -->
-                <div class="form-group">
-                    <label>Image Size</label>
-                    <select id="size">
-                        <option value="">-- Select Size --</option>
-                        <option value="256x256">256 × 256</option>
-                        <option value="512x512">512 × 512</option>
-                        <option value="768x768">768 × 768</option>
-                        <option value="1024x1024">1024 × 1024</option>
-                        <option value="1024x768">1024 × 768</option>
-                        <option value="1920x1080">1920 × 1080</option>
-                        <option value="4k">4K</option>
-                    </select>
-                </div>
+            <!-- Image Type -->
+            <div class="form-group">
+                <label>Image Type</label>
+                <select id="image_Type">
+                    <option value="">-- Select Type --</option>
+                    <option value="realistic">Realistic</option>
+                    <option value="3d">3D</option>
+                    <option value="illustration">Illustration</option>
+                    <option value="anime">Anime</option>
+                    <option value="concept-art">Concept Art</option>
+                    <option value="photography">Photography</option>
+                    <option value="pixel">Pixel Art</option>
+                </select>
             </div>
 
-            <!-- Custom Prompt -->
-            <div class="prompt-section">
-                <div class="form-group">
-                    <label>Custom Prompt <span>*</span></label>
-                    <textarea id="prompt" placeholder="Enter your custom prompt here..." rows="4"></textarea>
-                </div>
+            <!-- Category removed (not needed) -->
+
+            <!-- Mode -->
+            <div class="form-group">
+                <label>Mode</label>
+                <select id="mode">
+                    <option value="">-- Select Mode --</option>
+                    <option value="cinematic">Cinematic</option>
+                    <option value="minimalist">Minimalist</option>
+                    <option value="vibrant">Vibrant</option>
+                    <option value="dark">Dark</option>
+                    <option value="fantasy">Fantasy</option>
+                    <option value="retro">Retro</option>
+                    <option value="scifi">Sci-Fi</option>
+                </select>
             </div>
 
-            <!-- Generate Button -->
-            <div class="button-container">
-                <button onclick="generate_image()" id="generate_button">Generate Image</button>
-                <div id="error-msg" class="error-message"></div>
+            <!-- Size -->
+            <div class="form-group">
+                <label>Image Size</label>
+                <select id="size">
+                    <option value="">-- Select Size --</option>
+                    <option value="256x256">256 × 256</option>
+                    <option value="512x512">512 × 512</option>
+                    <option value="768x768">768 × 768</option>
+                    <option value="1024x1024">1024 × 1024</option>
+                    <option value="1024x768">1024 × 768</option>
+                    <option value="1920x1080">1920 × 1080</option>
+                    <option value="4k">4K</option>
+                </select>
             </div>
         </div>
 
-        <!-- Full-screen loading overlay (hidden by default) -->
-        <div id="loadingOverlay" style="display: none;">
-            <div class="loading-content">
-                <div class="spinner"></div>
-                <p class="loading-text">GENERATING YOUR IMAGE<span class="dots"></span></p>
+        <!-- Custom Prompt -->
+        <div class="prompt-section">
+            <div class="form-group">
+                <label>Custom Prompt <span>*</span></label>
+                <textarea id="prompt" placeholder="Enter your custom prompt here..." rows="4"></textarea>
             </div>
         </div>
 
-        <script>
-            async function generate_image(){
-                const model = document.getElementById('model').value;
-                const image_type = document.getElementById('image_Type').value;
-                const categoryEl = document.getElementById('category');
-                const category = categoryEl ? categoryEl.value : '';
-                const mode = document.getElementById('mode').value;
-                const image_size = document.getElementById('size').value;
-                const customPrompt = document.getElementById('prompt').value;
-                const errorMsg = document.getElementById('error-msg');
-                const loadingDiv = document.getElementById('loading');
-                const generateBtn = document.getElementById('generate_button');
+        <!-- Generate Button -->
+        <div class="button-container">
+            <button onclick="generate_image()" id="generate_button">Generate Image</button>
+            <div id="error-msg" class="error-message"></div>
+        </div>
+    </div>
 
-                // Clear previous error
-                errorMsg.textContent = '';
+    <!-- Full-screen loading overlay (hidden by default) -->
+    <div id="loadingOverlay" style="display: none;">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p class="loading-text">GENERATING YOUR IMAGE<span class="dots"></span></p>
+        </div>
+    </div>
 
-                // Validate that customPrompt is provided
-                if (!customPrompt || customPrompt.trim() === "") {
-                    errorMsg.textContent = "Please enter a custom prompt. It is required to generate an image.";
+    <script>
+        async function generate_image() {
+            const model = document.getElementById('model').value;
+            const image_type = document.getElementById('image_Type').value;
+            const categoryEl = document.getElementById('category');
+            const category = categoryEl ? categoryEl.value : '';
+            const mode = document.getElementById('mode').value;
+            const image_size = document.getElementById('size').value;
+            const customPrompt = document.getElementById('prompt').value;
+            const errorMsg = document.getElementById('error-msg');
+            const loadingDiv = document.getElementById('loading');
+            const generateBtn = document.getElementById('generate_button');
+            const isGuest = sessionStorage.getItem('guest_mode') === 'true';
+
+            if (isGuest) {
+                alert('Guest Mode: Please sign in or create a free account to generate images! You are currently in explorer mode.');
+                return;
+            }
+
+            // Clear previous error
+            errorMsg.textContent = '';
+
+            // Validate that customPrompt is provided
+            if (!customPrompt || customPrompt.trim() === "") {
+                errorMsg.textContent = "Please enter a custom prompt. It is required to generate an image.";
+                return;
+            }
+
+            let finalPrompt = customPrompt;
+
+            const data = {
+                model: model,
+                image_type: image_type,
+                category: category,
+                mode: mode,
+                image_size: image_size,
+                customPrompt: finalPrompt
+            }
+
+            // Show full-screen overlay immediately and disable the button
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.style.display = 'flex';
+            generateBtn.disabled = true;
+
+            // Store generation data so result page can read it
+            const generationData = {
+                model: model,
+                image_type: image_type,
+                category: category,
+                mode: mode,
+                image_size: image_size,
+                customPrompt: finalPrompt
+            };
+            sessionStorage.setItem('generationData', JSON.stringify(generationData));
+
+            // Use AbortController to implement a timeout for the API call
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 60000); // 60s timeout
+
+            try {
+                // include Supabase access token if present in sessionStorage
+                const headers = { 'Content-Type': 'application/json' };
+                const token = sessionStorage.getItem('supabase_access_token');
+                if (token) headers['Authorization'] = 'Bearer ' + token;
+
+                const response = await fetch('/generate-image', {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify(data),
+                    signal: controller.signal
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const finalRes = await response.json();
+                console.log('API response:', finalRes);
+
+                if (finalRes && finalRes.success) {
+                    sessionStorage.setItem('generatedImage', finalRes.image || '');
+                    sessionStorage.setItem('generationSuccess', 'true');
+                    // redirect to results page
+                    window.location.href = 'result.html';
                     return;
                 }
 
-                let finalPrompt = customPrompt;
+                // API returned success:false
+                sessionStorage.setItem('generationSuccess', 'false');
+                sessionStorage.setItem('errorMessage', (finalRes && finalRes.error) || 'Unknown error occurred');
+                window.location.href = 'result.html';
 
-                const data = {
-                    model: model,
-                    image_type: image_type,
-                    category: category,
-                    mode: mode,
-                    image_size: image_size,
-                    customPrompt: finalPrompt
-                }
-
-                // Show full-screen overlay immediately and disable the button
-                const loadingOverlay = document.getElementById('loadingOverlay');
-                loadingOverlay.style.display = 'flex';
-                generateBtn.disabled = true;
-
-                // Store generation data so result page can read it
-                const generationData = {
-                    model: model,
-                    image_type: image_type,
-                    category: category,
-                    mode: mode,
-                    image_size: image_size,
-                    customPrompt: finalPrompt
-                };
-                sessionStorage.setItem('generationData', JSON.stringify(generationData));
-
-                // Use AbortController to implement a timeout for the API call
-                const controller = new AbortController();
-                const timeout = setTimeout(() => controller.abort(), 60000); // 60s timeout
-
-                try {
-                    // include Supabase access token if present in sessionStorage
-                    const headers = { 'Content-Type': 'application/json' };
-                    const token = sessionStorage.getItem('supabase_access_token');
-                    if (token) headers['Authorization'] = 'Bearer ' + token;
-
-                    const response = await fetch('/generate-image', {
-                            method: 'POST',
-                            headers,
-                            body: JSON.stringify(data),
-                            signal: controller.signal
-                        });
-
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-
-                    const finalRes = await response.json();
-                    console.log('API response:', finalRes);
-
-                    if (finalRes && finalRes.success) {
-                        sessionStorage.setItem('generatedImage', finalRes.image || '');
-                        sessionStorage.setItem('generationSuccess', 'true');
-                        // redirect to results page
-                        window.location.href = 'result.html';
-                        return;
-                    }
-
-                    // API returned success:false
-                    sessionStorage.setItem('generationSuccess', 'false');
-                    sessionStorage.setItem('errorMessage', (finalRes && finalRes.error) || 'Unknown error occurred');
-                    window.location.href = 'result.html';
-
-                } catch (error) {
-                    console.error('Generation error:', error);
-                    // Differentiate abort error
-                    const msg = (error && error.name === 'AbortError') ? 'Request timed out. Please try again.' : (error.message || 'Network error.');
-                    sessionStorage.setItem('generationSuccess', 'false');
-                    sessionStorage.setItem('errorMessage', msg);
-                    window.location.href = 'result.html';
-                } finally {
-                    clearTimeout(timeout);
-                    // overlay will disappear on navigation; re-enable button in case navigation is prevented
-                    generateBtn.disabled = false;
-                    try { loadingOverlay.style.display = 'none'; } catch (e) {}
-                }
+            } catch (error) {
+                console.error('Generation error:', error);
+                // Differentiate abort error
+                const msg = (error && error.name === 'AbortError') ? 'Request timed out. Please try again.' : (error.message || 'Network error.');
+                sessionStorage.setItem('generationSuccess', 'false');
+                sessionStorage.setItem('errorMessage', msg);
+                window.location.href = 'result.html';
+            } finally {
+                clearTimeout(timeout);
+                // overlay will disappear on navigation; re-enable button in case navigation is prevented
+                generateBtn.disabled = false;
+                try { loadingOverlay.style.display = 'none'; } catch (e) { }
             }
-        </script>
+        }
 
-        <style>
-            /* Loading overlay styles */
-            #loadingOverlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100vw;
-                height: 100vh;
-                background: rgba(0, 0, 0, 0.92);
-                backdrop-filter: blur(10px);
-                -webkit-backdrop-filter: blur(10px);
-                display: none;
-                justify-content: center;
-                align-items: center;
-                z-index: 9999;
-                animation: fadeIn 0.3s ease;
+        // Global sign out logic with premium modal and animation
+        const logoutModal = document.getElementById('logoutModal');
+        const signoutBtn = document.getElementById('signout-header');
+        const confirmBtn = document.getElementById('confirmLogout');
+        const cancelBtn = document.getElementById('cancelLogout');
+
+        signoutBtn.addEventListener('click', () => {
+            logoutModal.classList.add('active');
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            logoutModal.classList.remove('active');
+        });
+
+        confirmBtn.addEventListener('click', () => {
+            logoutModal.classList.remove('active');
+            document.body.classList.add('dissolving');
+
+            setTimeout(() => {
+                sessionStorage.removeItem('supabase_access_token');
+                sessionStorage.removeItem('guest_mode');
+                window.location.href = 'login.html?logout=true';
+            }, 800);
+        });
+    </script>
+
+    <style>
+        /* Loading overlay styles */
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
             }
 
-            @keyframes fadeIn {
-                from { opacity: 0; }
-                to { opacity: 1; }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .loading-content {
+            text-align: center;
+        }
+
+        .spinner {
+            width: 100px;
+            height: 100px;
+            border: 6px solid rgba(255, 214, 107, 0.12);
+            border-top: 6px solid #ffd66b;
+            border-radius: 50%;
+            margin: 0 auto 24px;
+            animation: spin 1s linear infinite;
+            box-shadow: 0 0 28px rgba(255, 214, 107, 0.45);
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
             }
 
-            .loading-content { text-align: center; }
-
-            .spinner {
-                width: 100px;
-                height: 100px;
-                border: 6px solid rgba(255, 214, 107, 0.12);
-                border-top: 6px solid #ffd66b;
-                border-radius: 50%;
-                margin: 0 auto 24px;
-                animation: spin 1s linear infinite;
-                box-shadow: 0 0 28px rgba(255, 214, 107, 0.45);
+            100% {
+                transform: rotate(360deg);
             }
+        }
 
-            @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loading-text {
+            font-size: 13px;
+            color: #ffd66b;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(255, 214, 107, 0.5);
+            font-family: 'Press Start 2P', monospace;
+        }
 
-            .loading-text {
-                font-size: 13px;
-                color: #ffd66b;
-                letter-spacing: 2px;
-                text-shadow: 0 0 10px rgba(255, 214, 107, 0.5);
-                font-family: 'Press Start 2P', monospace;
-            }
+        .dots::after {
+            content: '.';
+            animation: dots 1.5s infinite steps(3, end);
+        }
 
-            .dots::after {
+        @keyframes dots {
+            0% {
                 content: '.';
-                animation: dots 1.5s infinite steps(3,end);
             }
 
-            @keyframes dots {
-                0% { content: '.'; }
-                33% { content: '..'; }
-                66% { content: '...'; }
-                100% { content: ''; }
+            33% {
+                content: '..';
             }
-        </style>
-    </body>
+
+            66% {
+                content: '...';
+            }
+
+            100% {
+                content: '';
+            }
+        }
+    </style>
+</body>
+
 </html>
